@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content-wrapper" style="max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #333; border-radius: 8px;">
+    <h2>Iniciar Sesión</h2>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        {{ form.as_p }}
+        
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 10px; background-color: #ffcc00; color: black; border: none; border-radius: 4px; margin-top: 15px;">
+            Iniciar Sesión
+        </button>
+    </form>
+    
+    <p style="text-align: center; margin-top: 20px;">
+        ¿No tienes cuenta? <a href="{% url 'registro' %}" style="color: #ffcc00;">Regístrate aquí</a>.
+    </p>
+
+</div>
+{% endblock content %}

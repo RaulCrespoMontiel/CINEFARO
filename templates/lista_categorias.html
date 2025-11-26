@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ titulo }} | CineFaro
+{% endblock title %}
+
+{% block content %}
+    <div style="padding: 20px;">
+        <h2>{{ titulo }}</h2>
+        <hr>
+
+        {% if categorias %}
+            <ul style="list-style-type: none; padding: 0;">
+                {% for categoria in categorias %}
+                    <li style="margin-bottom: 15px; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
+                        <a href="{% url 'app_creadores:obras_por_categoria' categoria.pk %}" style="font-weight: bold; font-size: 1.2em; text-decoration: none; color: #ffcc00;">
+                            {{ categoria.nombre }}
+                        </a>
+                        <p style="margin-top: 5px; color: #888;">{{ categoria.descripcion|default:"" }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No hay categorías definidas en este momento.</p>
+        {% endif %}
+    </div>
+{% endblock content %}

@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ pelicula.titulo }} (Archivo) - Cine Faro{% endblock title %}
+
+{% block head_css %}
+<!-- Estilos específicos para Detalle Huérfana, añadidos al head -->
+<style>
+    .detail-container { max-width: 900px; margin: 40px auto; padding: 20px; background: #222; border-radius: 8px; }
+    .video-player { width: 100%; height: 500px; background: black; margin-bottom: 20px; }
+    .tab-button { background-color: #333; color: white; padding: 10px 15px; border: none; border-radius: 5px 5px 0 0; cursor: pointer; margin-right: 5px; }
+    .tab-button.active { background-color: #E50914; }
+    .tab-content { background: #333; padding: 20px; border-radius: 0 5px 5px 5px; }
+    .sugerencia-box { background: #444; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+    .sugerencia-box label { color: #ffcc00; display: block; margin-top: 10px; }
+    .sugerencia-box select, .sugerencia-box input, .sugerencia-box textarea { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
+    .comentarios-seccion { margin-top: 30px; }
+</style>
+{% endblock head_css %}
+
+{% block content %}
+<div class="detail-container">
+    <h1 style="color: #E50914;">Archivo de Conservación: {{ pelicula.titulo }}</h1>
+    <p style="color: #ccc;">Año Estimado: {{ pelicula.anio_estimado|default:"Desconocido" }}</p>
+    <p style="color: #ccc;">
+        Categorías:
+        {% if pelicula.categorias.all %}
+            {% for categoria in pelicula.categorias.all %}
+                <span style="background-color: #333; padding: 3px 8px; border-radius: 4px; margin-right: 5px;">
+                    {{ categoria.nombre }}
+                </span>{% if not forloop.last %}{% endif %}
+            {% endfor %}
+        {% else %}
+            <span style="color: #888;">No hay categorías asignadas.</span>
+        {% endif %}
+    </p>
+    <!-- Pestañas de Navegación -->
+    <button class="tab-button active" onclick="openTab(event, 'info_conocida')">Sinopsis e Información</button>
+    <button class="tab-button" onclick="openTab(event, 'investigacion')">Investigación Colaborativa</button>
+
+    <!-- Contenido de la Pestaña 1: Información conocida -->
+    <div id="info_conocida" class="tab-content" style="display: block;">
+        {% if pelicula.url_video %}
+            <div class="video-player">
+                <p style="color: #fff; text-align: center; line-height: 500px;">[REPRODUCTOR DE VIDEO: {{ pelicula.url_video }}]</p>
+            </div>
+        {% endif %}
+
+        <h3>Sinopsis / Descripción Conocida</h3>
+        <!-- 🌟 CORRECCIÓN 1: Usar 'descripcion' en lugar de 'sinopsis_conocida' -->
+        <p>{{ pelicula.descripcion|default:"No hay sinopsis registrada. ¡Ayúdanos a encontrarla en la pestaña de Investigación!" }}</p>
+    </div>
+
+    <!-- Contenido de la Pestaña 2: Investigación -->
+    <div id="investigacion" class="tab-content" style="display: none;">
+        
+        <h3 style="color: #ffcc00;">1. Sugerencia de Metadatos (Aportar datos concretos)</h3>
+        <p style="color: #ccc;">Si tienes información verificable (Director, Año real, etc.), usa este formulario.</p>
+
+        <div class="sugerencia-box">
+            {% if user.is_authenticated %}
+                <!-- Asumo que la URL 'sugerir_metadato' y 'form' están disponibles -->
+                <form method="post" action="{% url 'app_conservacion:sugerir_metadato' pelicula.id %}">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" style="background-color: #ffcc00; color: black; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer;">Enviar Sugerencia</button>
+                </form>
+                
+            {% else %}
+                <p style="color: #E50914;">Debes <a href="{% url 'registro' %}" style="color: #ffcc00;">iniciar sesión</a> para sugerir metadatos.</p>
+            {% endif %}
+        </div>
+
+        <hr style="border-color: #444; margin: 30px 0;">
+        <div class="comentarios-seccion">
+            <!-- 🌟 CORRECCIÓN 2: Usar comentarios_huerfanas para acceder a los comentarios 🌟 -->
+            <h3 style="color: #ffcc00;">2. Discusión y Comentarios ({{ pelicula.comentarios_huerfanas.count }})</h3>
+            <p style="color: #ccc;">Usa esta sección para debatir hipótesis o compartir enlaces de investigación.</p>
+            
+            {% if user.is_authenticated %}
+                <!-- URL correcta para enviar comentarios a la vista central -->
+                <form method="post" action="{% url 'agregar_comentario' 'huerfana' pelicula.id %}">
+                    {% csrf_token %}
+                    {{ form_comentario.as_p }} 
+                    <button type="submit" style="background-color: #ffcc00; color: black; padding: 10px; border: none; border-radius: 4px; cursor: pointer;">Añadir al Debate</button>
+                </form>
+            {% else %}
+                <p style="color: #ccc;">Debes <a href="{% url 'registro' %}" style="color: #ffcc00;">iniciar sesión</a> para participar en la discusión.</p>
+            {% endif %}
+
+            <div style="margin-top: 20px;">
+                <!-- 🌟 CORRECCIÓN 3: Usar comentarios_huerfanas en el bucle 🌟 -->
+                {% for comentario in pelicula.comentarios_huerfanas.all|dictsortreversed:'fecha_creacion' %}
+                <div style="border-bottom: 1px dotted #444; padding: 10px 0;">
+                    <p style="margin: 0;">
+                        <strong style="color: #fff;">{{ comentario.usuario.username }}</strong> 
+                        <small style="color: #999;">({{ comentario.fecha_creacion|date:"d M Y h:i A" }})</small>
+                    </p>
+                    <p style="color: #ccc; margin-top: 5px;">{{ comentario.contenido }}</p>
+                </div>
+                {% empty %}
+                <p style="color: #777;">Inicia la discusión sobre esta obra huérfana.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Script de Pestañas (Se mantiene en el contenido) -->
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+    </script>
+
+</div>
+{% endblock content %}

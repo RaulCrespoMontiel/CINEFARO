@@ -1,0 +1,117 @@
+/* static/css/styles.css */
+
+body {
+    background-color: #111;
+    color: #ccc;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Barra de navegación superior */
+.header-nav {
+    background-color: #000;
+    color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid #E50914; /* Color rojo de acento */
+}
+
+.logo a {
+    color: #ffcc00; /* Amarillo Zoowoman */
+    font-size: 24px;
+    font-weight: bold;
+    text-decoration: none;
+}
+.header-nav nav a {
+    color: #ccc;
+    text-decoration: none;
+    margin: 0 10px;
+}
+.header-nav input[type="search"] {
+    padding: 5px;
+    border-radius: 3px;
+    border: 1px solid #444;
+    background-color: #333;
+    color: #fff;
+}
+
+.main-content {
+    display: flex;
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.content-wrapper {
+    flex: 3;
+    padding-right: 30px;
+}
+
+.sidebar {
+    flex: 1;
+    background-color: #1e1e1e;
+    padding: 15px;
+    border-radius: 5px;
+    color: #ddd;
+}
+.sidebar h3 {
+    color: #ffcc00;
+    border-bottom: 1px solid #444;
+    padding-bottom: 5px;
+    margin-top: 15px;
+}
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+.sidebar ul li {
+    margin-bottom: 5px;
+}
+
+/* Estilo de los carteles (posters) */
+.movie-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.movie-card {
+    background-color: #222;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s;
+}
+.movie-card:hover {
+    transform: scale(1.05);
+}
+
+.movie-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.movie-rating {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: #E50914; /* Fondo rojo de rating */
+    color: white;
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: bold;
+}
+.movie-card a {
+    color: #fff;
+    text-decoration: none;
+}
+.movie-card small {
+    color: #999;
+}

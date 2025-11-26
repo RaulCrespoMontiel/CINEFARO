@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Cine Faro - {{ slogan }}{% endblock title %}
+
+{% block content %}
+<div class="content-wrapper">
+
+    <h2>| Tendencias </h2>
+    <div class="movie-grid">
+        {% for obra in tendencias %}
+        <a href="{% url 'app_creadores:detalle_obra' obra.id %}" style="text-decoration: none; color: inherit;">
+            <div class="movie-card">
+                <img src="{% if obra.imagen_portada %}{{ obra.imagen_portada.url }}{% else %}{% static 'img/placeholder.jpg' %}{% endif %}"
+                    alt="{{ obra.titulo }}">
+                <span class="movie-rating">★ {{ obra.rating_promedio }}</span>
+                <div style="padding: 5px; font-size: 14px;">
+                    {{ obra.titulo|truncatechars:20 }}
+                </div>
+            </div>
+        </a>
+        {% empty %}
+        <p>No hay obras independientes en tendencias.</p>
+        {% endfor %}
+    </div>
+
+    <hr style="border-color: #333;">
+
+    <h2>| Archivo de Conservación </h2>
+    <div class="movie-grid">
+        {% for peli in ultimas_conservacion %}
+        <a href="{% url 'app_conservacion:detalle_huerfana' peli.pk %}" style="text-decoration: none; color: inherit;">
+            <div class="movie-card">
+                <img src="{% if peli.imagen_portada %}{{ peli.imagen_portada.url }}{% else %}{% static 'img/placeholder.jpg' %}{% endif %}"
+                    alt="{{ peli.titulo }}">
+                <div style="padding: 5px; font-size: 14px;">
+                    {{ peli.titulo|truncatechars:20 }}
+                    <br><small style="color: #777;">({{ peli.anio_estimado|default:"S.F." }})</small>
+                </div>
+            </div>
+        </a>
+        {% empty %}
+        <p>No hay películas huérfanas en el archivo.</p>
+        {% endfor %}
+    </div>
+
+</div>
+
+<div class="sidebar">
+    <h3>Páginas Hermanas</h3>
+    <div style="margin-bottom: 20px;">
+        <p>
+            <a href="https://www.youtube.com/@Lafilmotecamaldita">📻 Filmoteca Maldita</a>
+        </p>
+        <p>
+            <a href="https://www.rebeldemule.org/">⭐ RebeldeMule</a>
+        </p>
+    </div>
+
+    {% if categorias_sidebar %} 
+        <h3 style="margin-top: 30px;">{{ titulo_categorias }}</h3> 
+        
+        <ul style="list-style-type: none; padding: 0;">
+            {% for categoria in categorias_sidebar %}
+                <li style="margin-bottom: 5px;">
+                    <a href="{% url 'app_creadores:obras_por_categoria' categoria.pk %}" 
+                       style="color: #ffcc00; text-decoration: none;">
+                        {{ categoria.nombre }}
+                    </a>
+                    
+                    {% if categoria.total_obras %}
+                       <span style="color: #aaa;">({{ categoria.total_obras }})</span>
+                    {% endif %}
+                    </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+</div>
+{% endblock content %}

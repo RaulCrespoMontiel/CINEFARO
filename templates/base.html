@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Cine Faro{% endblock title %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+
+<body>
+
+    <div class="header-nav">
+        <div class="logo"><a href="{% url 'home' %}">CINEFARO</a></div>
+        <nav>
+            |
+            <a href="{% url 'app_creadores:listado_independientes' %}">Películas independientes</a>
+            |
+            <a href="{% url 'app_conservacion:listado_huerfanas' %}">Conservación de cine huérfano</a>
+            |
+
+            {% if user.is_authenticated %}
+                | <a href="{% url 'app_creadores:subir_obra' %}" style="color: #ffcc00; font-weight: bold;">Subir Obra</a>
+
+                <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" style="background: none; border: none; color: white; cursor: pointer; padding: 0; margin-left: 10px;">
+                        Cerrar Sesión
+                    </button>
+                </form>
+            {% else %}
+                | <a href="{% url 'registro' %}">Registrarse</a>
+                | <a href="{% url 'login' %}">Iniciar Sesión</a>
+            {% endif %}
+
+        </nav>
+        
+        <form action="{% url 'busqueda_global' %}" method="get" style="display: inline-block;">
+            <input type="search" name="q" placeholder="Buscar..." value="{{ request.GET.q|default:'' }}">
+        </form>
+        
+    </div>
+    
+    <div class="messages-container" style="padding: 10px 20px;">
+        {% if messages %}
+            {% for message in messages %}
+                {% comment %}
+                Usamos message.tags para aplicar estilos (ej: 'success', 'error', 'warning')
+                {% endcomment %}
+                <div class="alert alert-{{ message.tags }}" 
+                     style="background-color: #4CAF50; color: white; padding: 10px; margin-bottom: 10px; border-radius: 5px; text-align: center;">
+                    
+                    {% comment %} 
+                    Si el tag es 'success' (usado en la vista dar_propina), mostramos el mensaje personalizado.
+                    {% endcomment %}
+                    {% if 'success' in message.tags %}
+                        Gracias por apoyar al equipo que creó esta obra
+                    {% else %}
+                        {{ message }}
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+    <div class="main-content">
+        {% block content %}
+        {% endblock content %}
+    </div>
+
+    <footer style="text-align: center; padding: 20px; color: #555;">
+        &copy; 2025 CNF COMPANY.
+    </footer>
+
+</body>
+
+</html>
